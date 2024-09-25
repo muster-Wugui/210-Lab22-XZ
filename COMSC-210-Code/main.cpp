@@ -5,10 +5,10 @@
 //  Created by Xiao Zhang on 9/25/24.
 //
 
-#include <iostream>
-
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+#include<iostream>
+using namespace std;
+int main(){
+    cout<<"Hello world"<<endl;
+    cout<<"Finally!!!"<<endl;
     return 0;
 }
