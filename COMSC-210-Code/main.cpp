@@ -8,7 +8,15 @@
 #include<iostream>
 using namespace std;
 int main(){
-    cout<<"Hello world"<<endl;
-    cout<<"Finally!!!"<<endl;
+    char x;
+    cout<<"do you want to run this program?(y/n)"<<endl;
+    cin>>x;
+    if(x == 'y' || x == 'Y'){
+        cout<<"Hello world"<<endl;
+        cout<<"Finally!!!"<<endl;
+    }
+    else{
+        cout<<"Okay"<<endl;
+    }
     return 0;
 }
