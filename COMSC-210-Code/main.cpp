@@ -96,7 +96,7 @@ void Color::setB(int blue) {
 
 // Prints the RGB values
 void Color::show() const {
-    cout << "Color: (" << setw(3) << r << ", " << setw(3) << g << ", " << setw(3) << b << ")\n";
+    cout << "Color: (" << setw(3) << r << ", " << setw(3) << g << ", " << setw(3) << b << ")\n"; //The setw function helps to control the formatting of output(learned from internet)
 }
 
 // Prints out a few Color objects
