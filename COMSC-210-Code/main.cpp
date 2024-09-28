@@ -52,3 +52,33 @@ public:
         cout << "    Screenwriter: " << writer << endl;
     }
 };
+
+int main() {
+    vector<Movie> moviesList; // I chose to use vector as container
+    ifstream file("input.txt");
+    string title, writer;
+    int year;
+
+    if (!file) {
+        cout << "Can't open the file" << endl;
+        return 0;
+    }
+
+    while (getline(file, title)) {
+        file >> year;
+        file.ignore(); // This will ignore newline after reading year
+        getline(file, writer);
+
+        // add movie to the vector
+        moviesList.push_back(Movie(title, year, writer));
+    }
+
+    file.close();
+
+    for (const Movie& movie : moviesList) {
+        movie.show();
+        cout<<endl;
+    }
+
+    return 0;
+}
