@@ -1,123 +1,140 @@
-// COMSC-210 | Lab 16 | Xiao Zhang
+// COMSC-210 | Lab 17 | Xiao Zhang
 
 #include <iostream>
-#include <iomanip>
-
 using namespace std;
 
-const int MIN = 0;
-const int MAX = 255;
+const int SIZE = 7;
 
-class Color {
-private:
-    int r, g, b; // red, green, blue
-
-public:
-    // Default constructor
-    Color();
-
-    // Parameterized constructor
-    Color(int red, int green, int blue);
-
-    // Partial constructor (default green and blue to 0)
-    Color(int red);
-
-    int getR() const;
-    
-    void setR(int red);
-
-    int getG() const;
-    
-    void setG(int green);
-
-    int getB() const;
-    
-    void setB(int blue);
-
-    void show() const;
+struct Node {
+    float value;
+    Node* next;
 };
 
-void showColors(const Color& c1, const Color& c2, const Color& c3);
+void output(Node* head);
+Node* front(Node* head, float value);
+Node* delnode(Node* head, int position);
+Node* insnode(Node* head, float value, int position);
+Node* del(Node* head);
 
 int main() {
-    // Using the parameterized constructor
-    Color redC(255, 0, 0);
-    
-    // Using the default constructor
-    Color defaultC;
+    Node* head = nullptr;
 
-    // Using the partial constructor
-    Color partialR(128);
+    // create a linked list of size SIZE with random numbers 0-99
+    for (int i = 0; i < SIZE; i++) {
+        int tmp_val = rand() % 100;
+        head = front(head, tmp_val);  // add nodes to the front
+    }
 
-    // Using the parameterized constructor for custom the color
-    Color custom(50, 100, 150);
+    // Output the linked list
+    output(head);
 
-    // Outputing the color values
-    showColors(redC, defaultC, partialR);
+    // Delete a node
+    int entry;
+    cout << "Which node to delete? ";
+    output(head);
+    cout << "Choice --> ";
+    cin >> entry;
 
-    cout << "Custom Color:"<<endl;
-    custom.show();
+    // Call delnode function
+    head = delnode(head, entry);
+    output(head);
+
+    // Insert a new node
+    cout << "After which node to insert 10000? ";
+    output(head);
+    cout << "Choice --> ";
+    cin >> entry;
+    head = insnode(head, 10000, entry);
+    output(head);
+
+    // Delete the entire list
+    head = del(head);
+    output(head);
 
     return 0;
 }
 
-// default constructor
-Color::Color() : r(0), g(0), b(0) {}
+//Prints the linked list
+void output(Node* head) {
+    if (!head) {
+        cout << "Empty list.\n";
+        return;
+    }
 
-// Parameterized constructor
-Color::Color(int red, int green, int blue) {
-    setR(red);
-    setG(green);
-    setB(blue);
+    int count = 1;
+    Node* current = head;
+    while (current) {
+        cout << "[" << count++ << "] " << current->value << endl;
+        current = current->next;
+    }
+    cout << endl;
 }
 
-// Partial constructor, initializing only red
-Color::Color(int red) : r(0), g(0), b(0) {
-    setR(red);
+//adds a new node at the front of the list
+Node* front(Node* head, float value) {
+    Node* newNode = new Node;
+    newNode->value = value;
+    newNode->next = head;
+    return newNode;
 }
 
-int Color::getR() const {
-    return r;
+// deletes a node at a specific position
+Node* delnode(Node* head, int position) {
+    if (!head || position < 1) return head;
+
+    Node* current = head;
+    if (position == 1) {  // special case for head
+        head = current->next;
+        delete current;
+        return head;
+    }
+
+    Node* prev = nullptr;
+    for (int i = 1; i < position && current; i++) {
+        prev = current;
+        current = current->next;
+    }
+
+    if (current) {
+        prev->next = current->next;
+        delete current;
+    }
+
+    return head;
 }
 
-void Color::setR(int red) {
-    if (red >= MIN && red <= MAX)
-        r = red;
-    else
-        cerr << "Error: " << red << "\n";
+//inserts a new node at a specific position
+Node* insnode(Node* head, float value, int position) {
+    Node* newNode = new Node;
+    newNode->value = value;
+
+    if (position == 1) {  // insert at head
+        newNode->next = head;
+        return newNode;
+    }
+
+    Node* current = head;
+    Node* prev = nullptr;
+    for (int i = 1; i < position && current; i++) {
+        prev = current;
+        current = current->next;
+    }
+
+    if (prev) {
+        newNode->next = current;
+        prev->next = newNode;
+    }
+
+    return head;
 }
 
-int Color::getG() const {
-    return g;
-}
-
-void Color::setG(int green) {
-    if (green >= MIN && green <= MAX)
-        g = green;
-    else
-        cerr << "Error: " << green << "\n";
-}
-
-int Color::getB() const {
-    return b;
-}
-
-void Color::setB(int blue) {
-    if (blue >= MIN && blue <= MAX)
-        b = blue;
-    else
-        cerr << "Error: " << blue << "\n";
-}
-
-// Prints the RGB values
-void Color::show() const {
-    cout << "Color: (" << setw(3) << r << ", " << setw(3) << g << ", " << setw(3) << b << ")\n";
-}
-
-// Prints out a few Color objects
-void showColors(const Color& c1, const Color& c2, const Color& c3) {
-    cout << "Here are the colors:\n";
-    c1.show();
-    c2.show();
-    c3.show();
+//deletes the entire linked list
+Node* del(Node* head) {
+    Node* current = head;
+    while (current) {
+        Node* temp = current;
+        current = current->next;
+        delete temp;
+    }
+    return nullptr;
 }
