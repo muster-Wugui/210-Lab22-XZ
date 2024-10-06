@@ -1,140 +1,123 @@
-// COMSC-210 | Lab 17 | Xiao Zhang
+// COMSC-210 | Lab 18 | Xiao Zhang
 
 #include <iostream>
+#include <iomanip>
+#include <string>
 using namespace std;
 
-const int SIZE = 7;
-
-struct Node {
-    float value;
-    Node* next;
+// Review struct to store rating and comments
+struct Review {
+    double rating; // Movie rating (0.0 - 5.0)
+    string text; // Review text
+    Review* next; // Pointer to next review
 };
 
-void output(Node* head);
-Node* front(Node* head, float value);
-Node* delnode(Node* head, int position);
-Node* insnode(Node* head, float value, int position);
-Node* del(Node* head);
+void addToHead(Review*& head, double rating, string& text);
+void addToTail(Review*& head, double rating, string& text);
+void showAll(Review* head);
+double getAvg(Review* head);
 
 int main() {
-    Node* head = nullptr;
+    Review* head;
+    int option;
+    double rating;
+    string text;
+    char more;
 
-    // create a linked list of size SIZE with random numbers 0-99
-    for (int i = 0; i < SIZE; i++) {
-        int tmp_val = rand() % 100;
-        head = front(head, tmp_val);  // add nodes to the front
-    }
+    // Pick where to add new nodes
+    cout << "Which method to add reviews?\n";
+    cout << "    [1] Add to head\n";
+    cout << "    [2] Add to tail\n";
+    cout << "Choice: ";
+    cin >> option;
 
-    // Output the linked list
-    output(head);
 
-    // Delete a node
-    int entry;
-    cout << "Which node to delete? ";
-    output(head);
-    cout << "Choice --> ";
-    cin >> entry;
+    do {
+        // Get review details
+        cout << "Enter rating (0-5): ";
+        cin >> rating;
 
-    // Call delnode function
-    head = delnode(head, entry);
-    output(head);
+        // Validate rating input
+        while (rating < 0.0 || rating > 5.0) {
+            cout << "Invalid. Only between 0 to 5: ";
+            cin >> rating;
+        }
 
-    // Insert a new node
-    cout << "After which node to insert 10000? ";
-    output(head);
-    cout << "Choice --> ";
-    cin >> entry;
-    head = insnode(head, 10000, entry);
-    output(head);
+        cin.ignore(); // Skip leftover newline, I learned this online again
+        cout << "Enter comments: ";
+        getline(cin, text);
 
-    // Delete the entire list
-    head = del(head);
-    output(head);
+        // Add review based on choice
+        if (option == 1) {
+            addToHead(head, rating, text);
+        } else {
+            addToTail(head, rating, text);
+        }
+
+        cout << "Add another review? Y/N: ";
+        cin >> more;
+
+    } while (more == 'Y' || more == 'y');
+
+    // Show reviews and calculate average
+    cout << "\nReviews:\n";
+    showAll(head);
+
+    double avg = getAvg(head);
+    cout << "> Average: " << avg << endl;
 
     return 0;
 }
 
-//Prints the linked list
-void output(Node* head) {
-    if (!head) {
-        cout << "Empty list.\n";
-        return;
-    }
-
-    int count = 1;
-    Node* current = head;
-    while (current) {
-        cout << "[" << count++ << "] " << current->value << endl;
-        current = current->next;
-    }
-    cout << endl;
+// Adds new review at head
+void addToHead(Review*& head, double rating, string& text) {
+    Review* newReview = new Review;
+    newReview->rating = rating;
+    newReview->text = text;
+    newReview->next = head; // Point to old head
+    head = newReview; // Set as new head
 }
 
-//adds a new node at the front of the list
-Node* front(Node* head, float value) {
-    Node* newNode = new Node;
-    newNode->value = value;
-    newNode->next = head;
-    return newNode;
+// Adds new review at tail
+void addToTail(Review*& head, double rating, string& text) {
+    Review* newReview = new Review; // Allocate new node
+    newReview->rating = rating;
+    newReview->text = text;
+    newReview->next = nullptr;
+
+    if (head == nullptr) {
+        head = newReview;
+    } else {
+        Review* temp = head;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = newReview;
+    }
 }
 
-// deletes a node at a specific position
-Node* delnode(Node* head, int position) {
-    if (!head || position < 1) return head;
-
-    Node* current = head;
-    if (position == 1) {  // special case for head
-        head = current->next;
-        delete current;
-        return head;
+// Show all reviews
+void showAll(Review* head) {
+    int num = 1;
+    Review* temp = head;
+    while (temp != nullptr) {
+        cout << "    > Review #" << num << ": " << temp->rating << ": " << temp->text << endl;
+        temp = temp->next;
+        num++;
     }
-
-    Node* prev = nullptr;
-    for (int i = 1; i < position && current; i++) {
-        prev = current;
-        current = current->next;
-    }
-
-    if (current) {
-        prev->next = current->next;
-        delete current;
-    }
-
-    return head;
 }
 
-//inserts a new node at a specific position
-Node* insnode(Node* head, float value, int position) {
-    Node* newNode = new Node;
-    newNode->value = value;
+// Get average rating
+double getAvg(Review* head) {
+    int count = 0;
+    double total = 0.0;
+    Review* temp = head;
 
-    if (position == 1) {  // insert at head
-        newNode->next = head;
-        return newNode;
+    // Calculate total and count
+    while (temp != nullptr) {
+        total += temp->rating;
+        count++;
+        temp = temp->next;
     }
-
-    Node* current = head;
-    Node* prev = nullptr;
-    for (int i = 1; i < position && current; i++) {
-        prev = current;
-        current = current->next;
+        return total / count;
     }
-
-    if (prev) {
-        newNode->next = current;
-        prev->next = newNode;
-    }
-
-    return head;
-}
-
-//deletes the entire linked list
-Node* del(Node* head) {
-    Node* current = head;
-    while (current) {
-        Node* temp = current;
-        current = current->next;
-        delete temp;
-    }
-    return nullptr;
-}
