@@ -1,87 +1,92 @@
-// COMSC-210 | Lab 19 | Xiao Zhang
-
+// COMSC-210 | Lab 20 | Xiao Zhang
 #include <iostream>
-#include <string>
-#include <cstdlib>
-#include <ctime>
-#include <vector>
+#include <iomanip>
+#include <cstdlib>  // For rand() and srand()
+#include <ctime>    // For seeding rand()
+
 using namespace std;
+const int SIZE = 3;
 
-struct Review {
-    float score;
-    string note;
-    Review* next;
-    Review(float s, const string& n) : score(s), note(n), next(nullptr) {} //constructor
-};
-
-// Movie class to hold movie details and reviews
-class Movie {
+class Chair {
+private:
+    int legs;
+    double *prices;
 public:
-    string name;
-    Review* reviews;
-    Movie(const string& movieName) : name(movieName), reviews(nullptr) {}
-    //destructor
-    ~Movie() {
-        while (reviews != nullptr) {
-            Review* temp = reviews;
-            reviews = reviews->next;
-            delete temp;
+    // Default constructor: random legs and random prices
+    Chair() {
+        prices = new double[SIZE];
+
+        legs = (rand() % 2) + 3; // Randomly choose 3 or 4 legs
+        
+        // Randomly assign prices between $100.00 and $999.99
+        const int MIN = 10000, MAX = 99999;
+        for (int i = 0; i < SIZE; i++) {
+            prices[i] = (rand() % (MAX - MIN + 1) + MIN) / 100.0;
         }
     }
 
-    // Add review at the start of the list
-    void addReview(float score, const string& note) {
-        Review* newReview = new Review(score, note);
-        newReview->next = reviews;
-        reviews = newReview;
+    // Parameter constructor
+    Chair(int l, double p[SIZE]) {
+        prices = new double[SIZE];
+        legs = l;
+        for (int i = 0; i < SIZE; i++) {
+            prices[i] = p[i];
+        }
     }
 
-    // Show all reviews
-    void showReviews() {
-        cout << "Reviews for: " << name << endl;
-        Review* temp = reviews;
-        while (temp != nullptr) {
-            cout << "  - " << temp->score << ": " << temp->note << endl;
-            temp = temp->next;
-        }
+
+    void setLegs(int l) { legs = l; }
+    int getLegs() { return legs; }
+
+    void setPrices(double p1, double p2, double p3) {
+        prices[0] = p1;
+        prices[1] = p2;
+        prices[2] = p3;
+    }
+
+    double getAveragePrices() {
+        double sum = 0;
+        for (int i = 0; i < SIZE; i++)
+            sum += prices[i];
+        return sum / SIZE;
+    }
+
+    void print() {
+        cout << "CHAIR DATA - legs: " << legs << endl;
+        cout << "Price history: ";
+        for (int i = 0; i < SIZE; i++)
+            cout << prices[i] << " ";
+        cout << endl << "Historical avg price: " << getAveragePrices();
+        cout << endl << endl;
+    }
+
+    // Destructor
+    ~Chair() {
+        delete[] prices;
     }
 };
 
-float randrating();
-void defaltR(Movie& movie);
 int main() {
-    srand(static_cast<unsigned int>(time(0)));  // Seed for random numbers
+    srand(time(0));  // Seed for random number generation
+    cout << fixed << setprecision(2);
 
-    Movie movie1("The Matrix");
-    Movie movie2("Inception");
+    // Creating pointer to first chair object using the default constructor
+    Chair *chairPtr = new Chair;
+    chairPtr->print();
 
-    // If no files, add some default reviews
-    defaltR(movie1);
-    defaltR(movie2);
+    // Creating dynamic chair object with parameter constructor
+    double prices1[SIZE] = {525.25, 434.34, 252.52};
+    Chair *livingChair = new Chair(3, prices1);
+    livingChair->print();
+    delete livingChair;
+    livingChair = nullptr;
 
-    movie1.showReviews();
-    movie2.showReviews();
+    // Creating dynamic array of chair objects using default constructor
+    Chair *collection = new Chair[SIZE];
+    for (int i = 0; i < SIZE; i++) {
+        collection[i].print();
+    }
 
+    delete[] collection;
     return 0;
 }
-
-// Get random score between 1.0 and 5.0
-float randrating() {
-    return static_cast<float>(rand() % 41 + 10) / 10.0;
-}
-
-// Add some default reviews if I don't have files
-void defaltR(Movie& movie) {
-    string Dcomments[] = {
-        "Great storyline!",
-        "Loved the characters.",
-        "Amazing visual.",
-        "want to watch it again!",
-    };
-    for (int i = 0; i < 3; ++i) {  // Add three reviews randomly
-        float score = randrating();
-        movie.addReview(score, Dcomments[i % 5]);
-    }
-}
-
-
