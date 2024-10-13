@@ -1,6 +1,8 @@
 // COMSC-210 | Lab 22 | Xiao Zhang
 
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 const int MIN_NR = 10, MAX_NR = 99, MIN_LS = 5, MAX_LS = 20;
